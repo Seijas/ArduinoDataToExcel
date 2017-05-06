@@ -2,6 +2,9 @@ package arduinodatatoexcel;
 
 import com.panamahitek.ArduinoException;
 import com.panamahitek.PanamaHitek_Arduino;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -16,6 +19,10 @@ import jssc.SerialPortException;
 public class Window extends javax.swing.JFrame {
 
     DefaultTableModel table;
+    Date date;
+    DateFormat hourFormat;
+    String time;
+    boolean state;
     
     PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
     SerialPortEventListener listener = new SerialPortEventListener() {
@@ -25,9 +32,7 @@ public class Window extends javax.swing.JFrame {
                 if (ino.isMessageAvailable()){
                     inoData(ino.printMessage());
                 }
-            } catch (SerialPortException ex) {
-                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ArduinoException ex) {
+            } catch (SerialPortException | ArduinoException ex) {
                 Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -36,6 +41,9 @@ public class Window extends javax.swing.JFrame {
     public Window() {
         initComponents();
         table = (DefaultTableModel) jTableData.getModel();
+        hourFormat = new SimpleDateFormat("HH:mm:ss");
+        
+        state = false;
         
         try {
             ino.arduinoRXTX("COM5", 9600, listener);
@@ -47,7 +55,10 @@ public class Window extends javax.swing.JFrame {
 
     private void inoData(String data){
         
-        System.out.println(data);
+        date = new Date();
+        time = hourFormat.format(date);
+        
+        System.out.println(time);
         
     }
     /**
@@ -86,6 +97,11 @@ public class Window extends javax.swing.JFrame {
         });
 
         jButtonStop.setText("Stop recording");
+        jButtonStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonStopActionPerformed(evt);
+            }
+        });
 
         jButtonExport.setText("Export data tu excel");
 
@@ -133,8 +149,34 @@ public class Window extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStartActionPerformed
-        // TODO add your handling code here:
+        
+        if (!state) {
+            
+            try {
+                ino.sendData("1");
+            } catch (ArduinoException | SerialPortException ex) {
+                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            state = !state;
+        }
+        
     }//GEN-LAST:event_jButtonStartActionPerformed
+
+    private void jButtonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStopActionPerformed
+        
+        if (state) {
+            
+            try {
+                ino.sendData("0");
+            } catch (ArduinoException | SerialPortException ex) {
+                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            state = !state;
+        }
+        
+    }//GEN-LAST:event_jButtonStopActionPerformed
 
     /**
      * @param args the command line arguments
