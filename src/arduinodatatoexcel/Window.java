@@ -1,6 +1,13 @@
 package arduinodatatoexcel;
 
+import com.panamahitek.ArduinoException;
+import com.panamahitek.PanamaHitek_Arduino;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
+import jssc.SerialPortException;
 
 /**
  * @version 1.0
@@ -10,13 +17,39 @@ public class Window extends javax.swing.JFrame {
 
     DefaultTableModel table;
     
+    PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
+    SerialPortEventListener listener = new SerialPortEventListener() {
+        @Override
+        public void serialEvent(SerialPortEvent spe) {
+            try {
+                if (ino.isMessageAvailable()){
+                    inoData(ino.printMessage());
+                }
+            } catch (SerialPortException ex) {
+                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    };
     
     public Window() {
         initComponents();
         table = (DefaultTableModel) jTableData.getModel();
         
+        try {
+            ino.arduinoRXTX("COM5", 9600, listener);
+        } catch (ArduinoException ex) {
+            Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
+    private void inoData(String data){
+        
+        System.out.println(data);
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
