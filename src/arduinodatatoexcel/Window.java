@@ -46,7 +46,7 @@ public class Window extends javax.swing.JFrame {
         state = false;
         
         try {
-            ino.arduinoRXTX("COM5", 9600, listener);
+            ino.arduinoRXTX("COM3", 9600, listener);
         } catch (ArduinoException ex) {
             Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -55,12 +55,14 @@ public class Window extends javax.swing.JFrame {
 
     private void inoData(String data){
         
+        ArduinoData d = new ArduinoData(data);
+        
         date = new Date();
         time = hourFormat.format(date);
         
-        System.out.println(time);
-        
+        table.addRow(new Object[]{time, d.getTemp(), d.getHum(), d.getState()});
     }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
