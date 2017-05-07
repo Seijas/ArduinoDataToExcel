@@ -136,6 +136,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Export data tu excel"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonExportActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
