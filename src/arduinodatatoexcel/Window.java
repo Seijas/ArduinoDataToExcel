@@ -33,6 +33,7 @@ public class Window extends javax.swing.JFrame {
     String time;
     boolean connect;
     boolean state;
+    boolean tableCount;
     
     PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
     SerialPortEventListener listener = new SerialPortEventListener() {
@@ -55,6 +56,10 @@ public class Window extends javax.swing.JFrame {
         
         connect = false;
         state = false;
+        tableCount = false;
+        
+        this.jButtonExport.setEnabled(tableCount);
+        this.jLabelState.setText("Arduino not connected");
         
         writeComboBox();
         stateButtoms();
@@ -64,7 +69,6 @@ public class Window extends javax.swing.JFrame {
         
         this.jComboBox.removeAllItems();
         
-        this.jComboBox.addItem("COM1");
         this.jComboBox.addItem("COM2");
         this.jComboBox.addItem("COM3");
         
@@ -78,6 +82,13 @@ public class Window extends javax.swing.JFrame {
         time = hourFormat.format(date);
         
         table.addRow(new Object[]{time, d.getTemp(), d.getHum(), d.getState()});
+        
+        if (!tableCount) {
+            if ( table.getRowCount() > 0 ){
+                tableCount = true;
+                this.jButtonExport.setEnabled(tableCount);
+            }
+        }
     }
     
     private String getCom(){
@@ -200,8 +211,8 @@ public class Window extends javax.swing.JFrame {
             jPanelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelSuperiorLayout.createSequentialGroup()
                 .addComponent(jButtonConnect)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabelState, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabelState, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -307,6 +318,8 @@ public class Window extends javax.swing.JFrame {
             
             connect = true;
             this.stateButtoms();
+            
+            this.jLabelState.setText("Arduino " + this.getCom() + " conected");
             
         } catch (ArduinoException ex) {
             Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
