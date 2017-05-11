@@ -35,7 +35,7 @@ public class Window extends javax.swing.JFrame {
     boolean state;
     boolean tableCount;
     
-    PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
+    PanamaHitek_Arduino ino;
     SerialPortEventListener listener = new SerialPortEventListener() {
         @Override
         public void serialEvent(SerialPortEvent spe) {
@@ -314,6 +314,8 @@ public class Window extends javax.swing.JFrame {
     private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConnectActionPerformed
         
         try {
+            ino = new PanamaHitek_Arduino();
+            
             ino.arduinoRXTX(this.getCom(), 9600, listener);
             
             connect = true;
