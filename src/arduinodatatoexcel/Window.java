@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -26,6 +27,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
  * @author Seijas
  */
 public class Window extends javax.swing.JFrame {
+    
+    // Tratamiento de errores
+    private static final String COD105 = "-105";
+    private static final String COD106 = "-106";
+    private static final String COD404 = "404";
 
     private final DefaultTableModel table;
     private final DateFormat hourFormat;
@@ -47,7 +53,10 @@ public class Window extends javax.swing.JFrame {
                     inoData(ino.printMessage());
                 }
             } catch (SerialPortException | ArduinoException ex) {
-                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(Window.this, "Codigo error: " + COD105,
+                        "Hard Error...", JOptionPane.ERROR_MESSAGE);
+                
+                // Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     };
@@ -131,15 +140,24 @@ public class Window extends javax.swing.JFrame {
         }
         
         try {
-            FileOutputStream Fichero;
-            Fichero = new FileOutputStream(path);
+            FileOutputStream Fichero = new FileOutputStream(path);
             libro.write(Fichero);
+            
             Fichero.close();
             
+            JOptionPane.showMessageDialog(this, "Excel created successfully",
+                    "Success", JOptionPane.DEFAULT_OPTION);
+            
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Codigo error: " + COD404, 
+                    "Error...", JOptionPane.ERROR_MESSAGE);
+            
+            // Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Codigo error: " + COD106, 
+                    "Error...", JOptionPane.ERROR_MESSAGE);
+            
+            // Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -282,7 +300,10 @@ public class Window extends javax.swing.JFrame {
             try {
                 ino.sendData("1");
             } catch (ArduinoException | SerialPortException ex) {
-                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Cannot send data to Arduino " 
+                        + this.getCom(), "Error...", JOptionPane.ERROR_MESSAGE);
+                
+                // Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
             }
             
             state = !state;
@@ -297,7 +318,10 @@ public class Window extends javax.swing.JFrame {
             try {
                 ino.sendData("0");
             } catch (ArduinoException | SerialPortException ex) {
-                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Cannot send data to Arduino " 
+                        + this.getCom(), "Error...", JOptionPane.ERROR_MESSAGE);
+                
+                // Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
             }
             
             state = !state;
@@ -330,7 +354,11 @@ public class Window extends javax.swing.JFrame {
             
             } catch (ArduinoException ex) {
                 connect = false;
-                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+                
+                JOptionPane.showMessageDialog(this, "Cannot connect to Arduino " 
+                        + this.getCom(), "Error...", JOptionPane.ERROR_MESSAGE);
+                
+                // Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
             }
             
         } else {
@@ -343,7 +371,10 @@ public class Window extends javax.swing.JFrame {
                 this.jLabelState.setText("Arduino disconected...");
             
             } catch (ArduinoException ex) {
-                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Cannot disconnect " 
+                        + this.getCom(), "Error...", JOptionPane.ERROR_MESSAGE);
+
+                // Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
             }
             
         }
