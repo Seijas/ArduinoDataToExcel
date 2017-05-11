@@ -27,13 +27,16 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
  */
 public class Window extends javax.swing.JFrame {
 
-    DefaultTableModel table;
-    Date date;
-    DateFormat hourFormat;
-    String time;
-    boolean connect;
-    boolean state;
-    boolean tableCount;
+    private final DefaultTableModel table;
+    private final DateFormat hourFormat;
+    private Date date;
+    private String time;
+    
+    private boolean connect;
+    private boolean state;
+    private boolean tableCount;
+    
+    private final int baudios = 9600;
     
     PanamaHitek_Arduino ino;
     SerialPortEventListener listener = new SerialPortEventListener() {
@@ -71,6 +74,7 @@ public class Window extends javax.swing.JFrame {
         
         this.jComboBox.addItem("COM2");
         this.jComboBox.addItem("COM3");
+        this.jComboBox.addItem("COM5");
         
     }
     
@@ -313,19 +317,44 @@ public class Window extends javax.swing.JFrame {
 
     private void jButtonConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConnectActionPerformed
         
-        try {
-            ino = new PanamaHitek_Arduino();
+        if (!connect) {
             
-            ino.arduinoRXTX(this.getCom(), 9600, listener);
+            try {
+                ino = new PanamaHitek_Arduino();
+
+                ino.arduinoRXTX(this.getCom(), baudios, listener);
+
+                connect = true;
+                
+                this.jLabelState.setText("Arduino " + this.getCom() + " conected");
             
-            connect = true;
-            this.stateButtoms();
+            } catch (ArduinoException ex) {
+                connect = false;
+                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            }
             
-            this.jLabelState.setText("Arduino " + this.getCom() + " conected");
+        } else {
             
-        } catch (ArduinoException ex) {
-            Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                ino.killArduinoConnection();
+                
+                connect = false;
+                
+                this.jLabelState.setText("Arduino disconected...");
+            
+            } catch (ArduinoException ex) {
+                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
+        
+        if (connect) {
+            this.jButtonConnect.setText("Disconnect");
+        } else {
+            this.jButtonConnect.setText("Connect");
+        }
+        
+        this.stateButtoms();
         
     }//GEN-LAST:event_jButtonConnectActionPerformed
 
