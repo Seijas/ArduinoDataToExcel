@@ -81,9 +81,13 @@ public class Window extends javax.swing.JFrame {
         
         this.jComboBox.removeAllItems();
         
+        this.jComboBox.addItem("COM1");
         this.jComboBox.addItem("COM2");
         this.jComboBox.addItem("COM3");
+        this.jComboBox.addItem("COM4");
         this.jComboBox.addItem("COM5");
+        this.jComboBox.addItem("COM6");
+        this.jComboBox.addItem("COM7");
         
     }
     
@@ -132,9 +136,14 @@ public class Window extends javax.swing.JFrame {
             
             fila = hoja.createRow(i + 2);
             
-            for (int j = 0; j <= 3; j++) {
+            // Hora
+            celda = fila.createCell(0);
+            celda.setCellValue( jTableData.getValueAt(i, 0).toString() );
+            
+            // Datos
+            for (int j = 1; j <= 3; j++) {
                 celda = fila.createCell(j);
-                celda.setCellValue(jTableData.getValueAt(i, j).toString());
+                celda.setCellValue( Float.parseFloat( jTableData.getValueAt(i, j).toString() ) );
             }
             
         }
